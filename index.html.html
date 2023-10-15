@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="estilos.css">
+    <title>CRUD js</title>
+</head>
+
+
+
+<body>
+    <h1>Cadastro de Funcionário</h1>
+    
+    <h2>Adicionar Funcionário</h2>
+    <form id="formulario">
+        <input type="hidden" id="editIndex" value="-1"> <!-- Índice do funcionário em edição -->
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required><br><br>
+
+        <label for="salario">Salário:</label>
+        <input type="number" id="salario" step="0.01" required><br><br>
+
+        <label for="cargo">Função/Cargo:</label>
+        <input type="text" id="cargo" required><br><br>
+
+        <label for="estado">Estado:</label>
+        <select id="estado">
+            <option value=""></option>
+            <option value="AC">Acre</option>
+            <option value="AL">Alagoas</option>
+            <option value="AP">Amapá</option>
+            <option value="AM">Amazonas</option>
+            <option value="BA">Bahia</option>
+            <option value="PE">Pernambuco</option>
+            
+
+        >
+        </select><br><br>
+
+        <label for="cidade">Cidade:</label>
+        <select id="cidade"></select><br><br>
+
+        <label for="genero">Gênero:</label>
+        <select id="genero">
+            <option value=""></option>
+            <option value="masculino">Masculino</option>
+            <option value="feminino">Feminino</option>
+            <option value="outro">Outro</option>
+        </select><br><br>
+
+        <button type="button" onclick="adicionarEditarFuncionario()">Adicionar</button>
+    </form>
+
+    <h2>Lista de Funcionários</h2>
+    <ul id="listaFuncionarios">
+
+        <!-- A lista de funcionários será exibida aqui -->
+
+    </ul>
+
+    <script>
+        var formulario = document.getElementById("formulario");
+        const listaFuncionarios = document.getElementById("listaFuncionarios");
+        const estadoSelect = document.getElementById("estado");
+        const cidadeSelect = document.getElementById("cidade");
+
+        // Dados das cidades por estado
+        const cidadesPorEstado = {
+            "AC": [ "","Rio Branco", "Cruzeiro do Sul", "Senador Guiomard", "Tarauacá", "Plácido de Castro"],
+            "AL": ["","Maceió", "Arapiraca", "Rio Largo", "Palmeira dos Índios", "Marechal Deodoro"],
+            "AP": ["","Macapá", "Santana", "Laranjal do Jari", "Oiapoque", "Mazagão"],
+            "AM": ["","Manaus", "Parintins", "Itacoatiara", "Manacapuru", "Coari"],
+            "BA": ["","Salvador", "Feira de Santana", "Vitória da Conquista", "Camaçari", "Itabuna"],
+            "PE": ["","Recife", "Jaboatão dos Guararapes", "Caruaru", "Petrolina", "Moreno"]
+            
+        };
+
+        // Evento de mudança para preencher o select de cidades
+        estadoSelect.addEventListener("change", function() {
+            const estadoSelecionado = estadoSelect.value;
+            const cidades = cidadesPorEstado[estadoSelecionado] || [];
+
+            // Limpa as opções de cidade existentes
+            cidadeSelect.innerHTML = "";
+
+            // Adiciona as novas opções de cidade
+            cidades.forEach(cidade => {
+                const option = document.createElement("option");
+                option.value = cidade;
+                option.textContent = cidade;
+                cidadeSelect.appendChild(option);
+            });
+        });
+
+        function adicionarEditarFuncionario() {
+            const nome = document.getElementById("nome").value;
+            const salario = document.getElementById("salario").value;
+            const cargo = document.getElementById("cargo").value;
+            const estado = document.getElementById("estado").value;
+            const cidade = document.getElementById("cidade").value;
+            const genero = document.getElementById("genero").value;
+
+            const editIndex = parseInt(document.getElementById("editIndex").value);
+
+            if (editIndex === -1) {
+                // Adicionar um novo funcionário
+                const funcionario = {
+                    nome: nome,
+                    salario: salario,
+                    cargo: cargo,
+                    estado: estado,
+                    cidade: cidade,
+                    genero: genero
+                };
+
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    Nome: ${funcionario.nome}<br>
+                    Salário: R$ ${funcionario.salario}<br>
+                    Cargo: ${funcionario.cargo}<br>
+                    Estado: ${funcionario.estado}<br>
+                    Cidade: ${funcionario.cidade}<br>
+                    Gênero: ${funcionario.genero}<br>
+                    <button onclick="editarFuncionario(this)">Editar</button>
+                    <button onclick="excluirFuncionario(this)">Excluir</button>
+                `;
+
+                listaFuncionarios.appendChild(li);
+            } else {
+                // Editar um funcionário existente
+                const li = listaFuncionarios.children[editIndex];
+                li.innerHTML = `
+                    Nome: ${nome}<br>
+                    Salário: R$ ${salario}<br>
+                    Cargo: ${cargo}<br>
+                    Estado: ${estado}<br>
+                    Cidade: ${cidade}<br>
+                    Gênero: ${genero}<br>
+                    <button onclick="editarFuncionario(this)">Editar</button>
+                    <button onclick="excluirFuncionario(this)">Excluir</button>
+                `;
+
+                document.getElementById("editIndex").value = -1; // Resetar o índice de edição
+            }
+
+            // Limpa os campos do formulário
+            formulario.reset();
+        }
+
+        function editarFuncionario(botaoEditar) {
+            const li = botaoEditar.parentElement;
+            const campos = li.textContent.trim().split('\n').map(e => e.trim());
+
+            document.getElementById("nome").value = campos[0].split(': ')[1];
+            document.getElementById("salario").value = campos[1].split(': ')[1].split(' ')[1]; // Para remover "R$ "
+            document.getElementById("cargo").value = campos[2].split(': ')[1];
+            document.getElementById("estado").value = campos[3].split(': ')[1];
+            document.getElementById("cidade").value = campos[4].split(': ')[1];
+            document.getElementById("genero").value = campos[5].split(': ')[1];
+
+            const index = Array.from(li.parentNode.children).indexOf(li);
+            document.getElementById("editIndex").value = index;
+        }
+
+        function excluirFuncionario(botaoExcluir) {
+            const li = botaoExcluir.parentElement;
+            listaFuncionarios.removeChild(li);
+        }
+    </script>
+</body>
+</html>
