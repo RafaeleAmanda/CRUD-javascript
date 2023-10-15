@@ -31,7 +31,7 @@ e na seguência selecionar gênero e adicionar o novo funcionário a lista de fu
 ## Contato dos desenvolvedores
 
 - Email: rasp@discente.ifpe.edu.br - Rafaele Amanda
- -Email: dhsl1@discente.ifpe.edu.br - Dayvid Henrique
+ -Email: dhsl1@discente.ifpe.edu.br - Deyvid Henrique
 
 - GitHub: [RafaeleAmanda](https://github.com/RafaeleAmanda)
 
